@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: '#eee',
     borderWidth: 1,
-    backgroundColor: '#fefefe',
+    backgroundColor: '#e2e1cf',
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 1 },
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   payButton: {
     marginTop: 30,
-    backgroundColor: '#fc8019',
+    backgroundColor: '#758058',
     paddingVertical: 16,
     borderRadius: 10,
     alignItems: 'center',

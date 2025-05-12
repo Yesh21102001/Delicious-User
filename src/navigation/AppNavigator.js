@@ -34,15 +34,24 @@ const AppNavigator = () => {
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={{
-          tabBarActiveTintColor: "#007BFF",
-          tabBarInactiveTintColor: "#888",
+          tabBarActiveTintColor: "#e2e1cf",
+          tabBarInactiveTintColor: "black",
+          tabBarStyle: {
+            height: 70,
+            borderTopLeftRadius: 50,
+            borderTopRightRadius: 50,
+            backgroundColor: "#758058",
+            paddingTop: "8",
+            position: "absolute",
+            overflow: "hidden",
+          },
         }}
       >
         <Tab.Screen
           name="Home"
           component={HomeScreen}
           options={({ navigation }) => ({
-            tabBarLabel: "Home",
+            tabBarLabel: "Delicious",
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="home" size={size} color={color} />
             ),
@@ -142,7 +151,11 @@ const AppNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="Cart" component={CartScreen} />
-        <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} options={{ headerShown: false }}/>
+        <Stack.Screen
+          name="OrderSuccess"
+          component={OrderSuccessScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
         <Stack.Screen
           name="RestaurantDetails"

@@ -144,15 +144,14 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
+    backgroundColor: "#e2e1cf",
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
     marginBottom: 16,
   },
   primaryButton: {
-    backgroundColor: "#fc8019",
+    backgroundColor: "#758058",
     paddingVertical: 14,
     alignItems: "center",
     borderRadius: 8,

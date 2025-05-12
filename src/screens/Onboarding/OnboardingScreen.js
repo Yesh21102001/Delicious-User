@@ -45,13 +45,11 @@ const OnboardingScreen = ({ navigation }) => {
   };
 
   const handleSendOtp = () => {
-    // Placeholder function for OTP logic, can be replaced with custom logic if needed
     if (phoneNumber.trim().length !== 10) {
       alert("Please enter a valid 10-digit phone number.");
       return;
     }
 
-    // Here, you can implement your own OTP verification process or move to another screen
     alert(`OTP sent to ${phoneNumber}`);
     navigation.replace("OTP Verification", { phoneNumber });
   };
@@ -73,11 +71,9 @@ const OnboardingScreen = ({ navigation }) => {
               style={styles.backgroundImage}
             >
               <LinearGradient
-                colors={[
-                  "rgba(59, 39, 28, 0.2)",
-                  "rgba(59, 39, 28, 0.5)",
-                  "rgba(59, 39, 28, 0.8)",
-                ]}
+                colors={["rgba(226, 225, 207, 0.3)", "rgba(191, 187, 149, 0.5)"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
                 style={styles.overlay}
               />
               <View style={styles.textContainer}>
@@ -106,7 +102,7 @@ const OnboardingScreen = ({ navigation }) => {
         style={styles.modal}
       >
         <View style={styles.modalContent}>
-          <Text style={styles.welcomeText}>Welcome to FoodieApp 🍔</Text>
+          <Text style={styles.welcomeText}>Welcome to Delicious Biryani's</Text>
           <Text style={styles.loginPrompt}>Login with your phone number</Text>
           <TextInput
             style={styles.input}
@@ -157,7 +153,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   button: {
-    backgroundColor: "#f0cb75",
+    backgroundColor: "#758058",
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
@@ -168,7 +164,7 @@ const styles = StyleSheet.create({
     bottom: 40,
   },
   buttonText: {
-    color: "#3B271C",
+    color: "white",
     fontSize: 18,
     fontWeight: "bold",
   },
@@ -180,7 +176,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
   },
   activeDotStyle: {
-    backgroundColor: "#f0cb75",
+    backgroundColor: "#758058",
     width: 10,
     height: 10,
     borderRadius: 5,
@@ -210,15 +206,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
     marginBottom: 16,
+    backgroundColor: "#e2e1cf",
   },
   loginButton: {
-    backgroundColor: "#f0cb75",
+    backgroundColor: "#758058",
     padding: 14,
     borderRadius: 8,
     alignItems: "center",

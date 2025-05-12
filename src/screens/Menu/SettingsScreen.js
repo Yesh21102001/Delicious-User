@@ -9,13 +9,13 @@ const SettingsScreen = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.item} onPress={handleSupport}>
-        <Text>Contact Support</Text>
+        <Text style={styles.SettingsText}>Contact Support</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.item}>
-        <Text>FAQs</Text>
+        <Text style={styles.SettingsText}>FAQs</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.item}>
-        <Text style={{ color: 'red' }}>Logout</Text>
+        <Text style={styles.SettingsText}>Logout</Text>
       </TouchableOpacity>
     </View>
   );
@@ -23,12 +23,18 @@ const SettingsScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
   item: {
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderColor: '#eee',
+    backgroundColor: "#e2e1cf",
+    marginBottom: 20,
+    borderRadius: 10,
   },
+  SettingsText: {
+    paddingLeft: 20,
+    fontSize: 16,
+    fontWeight: '500',
+
+  }
 });
 
 export default SettingsScreen;
