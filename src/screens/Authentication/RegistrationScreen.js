@@ -10,26 +10,85 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
-const RegistrationScreen = ({ route, navigation }) => {
-  const { phoneNumber } = route.params;
+const BASE_URL = "http://192.168.29.186:2000/api"; // Make sure this IP is correct and reachable
+
+const RegistrationScreen = ({ navigation }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [referral, setReferral] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
 
-  const handleRegister = () => {
-    if (!name) {
-      Alert.alert("Error", "Full name is required.");
+  // Normalize phone (remove all non-digits, add +91 if needed)
+  const formatPhone = (rawPhone) => {
+    const digits = rawPhone.replace(/\D/g, "");
+    return digits.startsWith("91") ? `+${digits}` : `+91${digits}`;
+  };
+
+  const handleSendOtp = async () => {
+    if (!phone.trim()) {
+      Alert.alert("Error", "Please enter your phone number.");
       return;
     }
 
-    if (email && !/^\S+@\S+\.\S+$/.test(email)) {
-      Alert.alert("Error", "Please enter a valid email address.");
+    const formattedPhone = formatPhone(phone);
+
+    try {
+      const response = await fetch(`${BASE_URL}/send-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phone: formattedPhone }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Success", "OTP sent to " + formattedPhone);
+      } else {
+        Alert.alert("Error", data.message || "Failed to send OTP.");
+      }
+    } catch (error) {
+      console.error("Send OTP Error:", error);
+      Alert.alert("Error", "Network error while sending OTP.");
+    }
+  };
+
+  const handleContinue = async () => {
+    if (!name.trim() || !phone.trim() || !otp.trim()) {
+      Alert.alert("Error", "Please fill all required fields.");
       return;
     }
 
-    navigation.replace("LocationPermissionScreen");
+    const formattedPhone = formatPhone(phone);
+
+    try {
+      const response = await fetch(`${BASE_URL}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          phone: formattedPhone,
+          otp,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Success", "Registration successful!");
+        navigation.replace("LocationPermissionScreen");
+      } else {
+        Alert.alert("Error", data.message || "Registration failed.");
+      }
+    } catch (error) {
+      console.error("Register Error:", error);
+      Alert.alert("Error", "Network error during registration.");
+    }
   };
 
   return (
@@ -38,59 +97,57 @@ const RegistrationScreen = ({ route, navigation }) => {
       behavior={Platform.OS === "ios" ? "padding" : null}
     >
       <View style={styles.container}>
-        {/* Header Row */}
-        <View style={styles.headerRow}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="#000" />
-          </TouchableOpacity>
-          <Text style={styles.heading}>Complete Your Registration</Text>
-        </View>
-
-        {/* Scrollable Form */}
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
-        >
+        <Text style={styles.heading}>Complete Your Registration</Text>
+        <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
           <Text style={styles.label}>Full Name</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter your name"
-            placeholderTextColor="#aaa"
             value={name}
             onChangeText={setName}
+            placeholderTextColor="black"
           />
 
           <Text style={styles.label}>Email (optional)</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter your email"
-            placeholderTextColor="#aaa"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
+            placeholderTextColor="black"
           />
 
           <Text style={styles.label}>Phone Number</Text>
-          <TextInput
-            style={[styles.input, { backgroundColor: "#f5f5f5" }]}
-            value={phoneNumber}
-            editable={false}
-          />
+          <View style={styles.phoneRow}>
+            <TextInput
+              style={[styles.input, { flex: 1, marginRight: 8 }]}
+              placeholder="Enter phone number"
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+              placeholderTextColor="black"
+            />
+            <TouchableOpacity style={styles.otpButton} onPress={handleSendOtp}>
+              <Text style={styles.otpButtonText}>Send OTP</Text>
+            </TouchableOpacity>
+          </View>
 
-          <Text style={styles.label}>Referral Code (optional)</Text>
+          <Text style={styles.label}>OTP</Text>
           <TextInput
             style={styles.input}
-            placeholder="Have a referral code?"
-            placeholderTextColor="#aaa"
-            value={referral}
-            onChangeText={setReferral}
+            placeholder="Enter OTP"
+            value={otp}
+            onChangeText={setOtp}
+            keyboardType="number-pad"
+            maxLength={6}
+            placeholderTextColor="black"
           />
         </ScrollView>
       </View>
 
-      {/* Button at bottom */}
       <View style={styles.buttonWrapper}>
-        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+        <TouchableOpacity style={styles.button} onPress={handleContinue}>
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
       </View>
@@ -108,16 +165,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 60,
   },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 30,
-  },
   heading: {
     fontSize: 22,
     fontWeight: "700",
     color: "#000",
-    marginLeft: 12,
+    marginBottom: 30,
   },
   label: {
     fontSize: 14,
@@ -128,12 +180,27 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 48,
-    borderWidth: 1,
-    borderColor: "#ddd",
+    backgroundColor: "#FFEAC5",
+    color: "black",
     borderRadius: 10,
     paddingHorizontal: 14,
     fontSize: 16,
-    marginBottom: 4,
+  },
+  phoneRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  otpButton: {
+    backgroundColor: "#ffba00",
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    justifyContent: "center",
+  },
+  otpButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 12,
   },
   buttonWrapper: {
     padding: 20,
@@ -142,7 +209,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   button: {
-    backgroundColor: "#fc8019",
+    backgroundColor: "#ffba00",
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",

@@ -34,13 +34,13 @@ const AppNavigator = () => {
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={{
-          tabBarActiveTintColor: "#e2e1cf",
-          tabBarInactiveTintColor: "black",
+          tabBarActiveTintColor: "#ffba00",
+          tabBarInactiveTintColor: "white",
           tabBarStyle: {
             height: 70,
             borderTopLeftRadius: 50,
             borderTopRightRadius: 50,
-            backgroundColor: "#758058",
+            backgroundColor: "#0c3b2e",
             paddingTop: "8",
             position: "absolute",
             overflow: "hidden",
@@ -51,7 +51,13 @@ const AppNavigator = () => {
           name="Home"
           component={HomeScreen}
           options={({ navigation }) => ({
-            tabBarLabel: "Delicious",
+            tabBarLabel: "Home",
+            title: "Bhimavaram Delicious Biryanis", // Custom header title
+            headerTitleStyle: {
+              color: "#603F26", // ✅ Set header text color
+              fontWeight: "bold", // Optional: make it bold
+              fontSize: 22, // Optional: adjust font size
+            },
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="home" size={size} color={color} />
             ),
@@ -66,6 +72,7 @@ const AppNavigator = () => {
             ),
           })}
         />
+
         <Tab.Screen
           name="Menu"
           component={MenuScreen}
@@ -99,7 +106,7 @@ const AppNavigator = () => {
                 size={24}
                 color="#000"
                 style={{ marginRight: 15 }}
-                onPress={() => navigation.navigate("Cart")} // Navigate to Cart screen
+                onPress={() => navigation.navigate("Cart")}
               />
             ),
           }}
@@ -107,9 +114,10 @@ const AppNavigator = () => {
       </Tab.Navigator>
     );
   };
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="TrackOrder">
+      <Stack.Navigator initialRouteName="Onboard">
         <Stack.Screen
           name="Onboard"
           component={OnboardingScreen}

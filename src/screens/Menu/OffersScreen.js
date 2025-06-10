@@ -25,8 +25,8 @@ const OffersScreen = () => (
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
   header: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
-  card: { padding: 16, borderRadius: 8, backgroundColor: '#e2e1cf', marginBottom: 10 },
-  code: { fontWeight: 'bold', fontSize: 16, color: "#758058" },
+  card: { padding: 16, borderRadius: 8, backgroundColor: '#6d9773', marginBottom: 10 },
+  code: { fontWeight: 'bold', fontSize: 16, color: "#ffba00" },
 });
 
 export default OffersScreen;

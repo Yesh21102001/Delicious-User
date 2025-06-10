@@ -15,25 +15,36 @@ import { Ionicons } from "@expo/vector-icons";
 
 const HomeScreen = ({ navigation }) => {
   const [isVeg, setIsVeg] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const categories = [
-    { name: "Pizza" },
-    { name: "Burger" },
-    { name: "Juice" },
-    { name: "Desserts" },
+    { name: "Biryani" },
+    { name: "Starter" },
+    { name: "Noodles" },
+    { name: "Tandoori" },
   ];
+
+  const items = [
+    { name: "Margherita Pizza", price: 12, type: "Veg" },
+    { name: "Burger", price: 12, type: "Non-Veg" },
+    { name: "Pasta", price: 12, type: "Veg" },
+    { name: "Fries", price: 12, type: "Veg" },
+  ];
+
+  const handleAddItem = (item) => {
+    setSelectedItem(item);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar backgroundColor="black" barStyle="dark-content" />
       <ScrollView style={styles.container}>
         <LinearGradient
-          colors={["#bfbb95", "#e2e1cf"]}
+          colors={["#6d9773", "#e2e1cf"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.topSection}
         >
-          {/* Top Banner */}
           <View style={styles.bannerContainer}>
             <Image
               source={{
@@ -43,14 +54,12 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
 
-          {/* Veg/Non-Veg Toggle */}
           <View style={styles.filterContainer}>
             <Text style={styles.filterText}>Veg Only</Text>
             <Switch value={isVeg} onValueChange={setIsVeg} />
           </View>
         </LinearGradient>
 
-        {/* Categories Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Categories</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -68,12 +77,11 @@ const HomeScreen = ({ navigation }) => {
           </ScrollView>
         </View>
 
-        {/* Popular Items Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Bestsellers</Text>
           <View style={styles.itemsContainer}>
-            {["Margherita Pizza", "Burger", "Pasta", "Fries"]
-              .filter((item) => (isVeg ? item !== "Burger" : true))
+            {items
+              .filter((item) => (isVeg ? item.type === "Veg" : true))
               .map((item, index) => (
                 <View key={index} style={styles.itemCard}>
                   <Image
@@ -83,20 +91,35 @@ const HomeScreen = ({ navigation }) => {
                     style={styles.itemImage}
                   />
                   <View style={styles.itemDetails}>
-                    <Text style={styles.itemName}>{item}</Text>
-                    <Text style={styles.itemPrice}>$12</Text>
-                    <Text style={styles.itemType}>
-                      {item === "Burger" ? "Non-Veg" : "Veg"}
-                    </Text>
+                    <Text style={styles.itemName}>{item.name}</Text>
+                    <Text style={styles.itemPrice}>${item.price}</Text>
+                    <Text style={styles.itemType}>{item.type}</Text>
                   </View>
-                  <TouchableOpacity style={styles.addButton}>
-                    <Ionicons name="add-circle" size={30} color="#758058" />
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() => handleAddItem(item)}
+                  >
+                    <Ionicons name="add-circle" size={30} color="#6d9773" />
                   </TouchableOpacity>
                 </View>
               ))}
           </View>
         </View>
       </ScrollView>
+
+      {selectedItem && (
+        <TouchableOpacity
+          style={styles.bottomBar}
+          onPress={() => navigation.navigate("Cart")}
+        >
+          <Text style={styles.bottomBarText}>
+            1 item | ${selectedItem.price}
+          </Text>
+          <View style={styles.addToCartButton}>
+            <Text style={styles.addToCartText}>View Cart</Text>
+          </View>
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };
@@ -143,7 +166,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   categoryButton: {
-    backgroundColor: "#bfbb95",
+    backgroundColor: "#ffba00",
     alignItems: "center",
     marginRight: 15,
     padding: 10,
@@ -194,6 +217,38 @@ const styles = StyleSheet.create({
   },
   addButton: {
     padding: 5,
+  },
+  bottomBar: {
+    backgroundColor: "#ffba00",
+    height: 60,
+    width: "90%",
+    position: "absolute",
+    bottom: 15,
+    alignSelf: "center",
+    borderRadius: 50,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    elevation: 5,
+    marginBottom: 60,
+  },
+  bottomBarText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  // addToCartButton: {
+  //   backgroundColor: "#0c3b2e",
+  //   paddingVertical: 6,
+  //   paddingHorizontal: 14,
+  //   borderRadius: 6,
+  // },
+  addToCartText: {
+    color: "black",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginRight: 30,
   },
 });
 

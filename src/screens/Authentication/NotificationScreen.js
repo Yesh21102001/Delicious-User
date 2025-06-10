@@ -1,11 +1,20 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
-import * as Notifications from 'expo-notifications';
+// Comment out the import if you’re not testing notifications right now
+// import * as Notifications from 'expo-notifications';
 
 const NotificationScreen = ({ navigation }) => {
-  // Request notification permission
   const requestNotificationPermission = async () => {
-    const { status } = await Notifications.requestPermissionsAsync();  // Corrected line
+    // Skip permission logic if in Expo Go (DEV mode)
+    if (__DEV__) {
+      console.log('Skipping notification permission in Expo Go');
+      navigation.replace('AppTabs');
+      return;
+    }
+
+    // Uncomment when testing in dev build
+    /*
+    const { status } = await Notifications.requestPermissionsAsync();
 
     if (status === 'granted') {
       console.log('Notification permission granted');
@@ -14,6 +23,7 @@ const NotificationScreen = ({ navigation }) => {
       Alert.alert('Permission denied', 'You can enable notifications later from settings.');
       navigation.replace('AppTabs');
     }
+    */
   };
 
   return (
@@ -44,14 +54,14 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: 'bold', color: '#000', textAlign: 'center', marginBottom: 10 },
   subtitle: { fontSize: 14, color: '#666', textAlign: 'center', marginBottom: 30 },
   primaryButton: {
-    backgroundColor: '#fc8019',
+    backgroundColor: '#ffba00',
     paddingVertical: 14,
     paddingHorizontal: 30,
     borderRadius: 8,
     marginBottom: 12,
   },
   primaryButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  secondaryText: { color: '#fc8019', fontWeight: 'bold' },
+  secondaryText: { color: '#ffba00', fontWeight: 'bold' },
 });
 
 export default NotificationScreen;

@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    backgroundColor: '#e2e1cf',
+    backgroundColor: '#6d9773',
     borderRadius: 8,
     marginBottom: 12,
   },
@@ -76,8 +76,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   items: { fontSize: 16, fontWeight: '600', flex: 1 },
-  dateTime: { fontSize: 14, color: '#555', textAlign: 'right' },
-  status: { fontSize: 14, color: '#758058', fontWeight: '700', },
+  dateTime: { fontSize: 14, color: 'white', textAlign: 'right' },
+  status: { fontSize: 14, color: '#ffba00', fontWeight: '700', },
 });
 
 export default OrderHistoryScreen;

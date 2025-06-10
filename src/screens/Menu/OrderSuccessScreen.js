@@ -12,11 +12,19 @@ const OrderSuccessScreen = ({ navigation }) => (
     />
     <Text style={styles.title}>🎉 Order Placed Successfully!</Text>
     <Text style={styles.subtitle}>Sit tight! We’re preparing your order.</Text>
+
     <TouchableOpacity
       style={styles.button}
       onPress={() => navigation.navigate("AppTabs")}
     >
       <Text style={styles.buttonText}>Go to Home</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity
+      style={[styles.button, styles.trackButton]}
+      onPress={() => navigation.navigate("TrackOrder")}
+    >
+      <Text style={styles.buttonText}>Track Order</Text>
     </TouchableOpacity>
   </View>
 );
@@ -29,7 +37,11 @@ const styles = StyleSheet.create({
     padding: 24,
     backgroundColor: "#fff",
   },
-  animation: { width: 150, height: 150, marginBottom: 20 },
+  animation: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
+  },
   title: {
     fontSize: 22,
     fontWeight: "bold",
@@ -43,12 +55,21 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   button: {
-    backgroundColor: "#758058",
+    backgroundColor: "#ffba00",
     padding: 14,
     borderRadius: 8,
     marginTop: 20,
+    width: "100%",
+    alignItems: "center",
   },
-  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  trackButton: {
+    backgroundColor: "#000", // corrected color
+  },
 });
 
 export default OrderSuccessScreen;

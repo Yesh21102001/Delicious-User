@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,86 +8,26 @@ import {
   ScrollView,
 } from "react-native";
 import Collapsible from "react-native-collapsible";
-
-const menuData = [
-  {
-    category: "Biryani",
-    items: [
-      {
-        id: "1",
-        name: "Chicken Biryani",
-        price: 199,
-        description: "Spicy chicken biryani with basmati rice.",
-        image:
-          "https://img.freepik.com/free-psd/top-view-delicious-pizza_23-2151868956.jpg?t=st=1742108540~exp=1742112140~hmac=6b1d718cf9aa131c5d7532ff14ae50539db74da00f51398ad2304f9c43d3bd22&w=740",
-        type: "non-veg",
-      },
-      {
-        id: "2",
-        name: "Veg Biryani",
-        price: 159,
-        description: "Delicious vegetable biryani cooked with herbs.",
-        image:
-          "https://img.freepik.com/free-psd/top-view-delicious-pizza_23-2151868956.jpg?t=st=1742108540~exp=1742112140~hmac=6b1d718cf9aa131c5d7532ff14ae50539db74da00f51398ad2304f9c43d3bd22&w=740",
-        type: "veg",
-      },
-    ],
-  },
-  {
-    category: "Starters",
-    items: [
-      {
-        id: "3",
-        name: "Paneer Tikka",
-        price: 149,
-        description: "Grilled paneer marinated with spices.",
-        image:
-          "https://img.freepik.com/free-psd/top-view-delicious-pizza_23-2151868956.jpg?t=st=1742108540~exp=1742112140~hmac=6b1d718cf9aa131c5d7532ff14ae50539db74da00f51398ad2304f9c43d3bd22&w=740",
-        type: "veg",
-      },
-      {
-        id: "4",
-        name: "Chicken 65",
-        price: 169,
-        description: "Spicy deep-fried chicken starter.",
-        image:
-          "https://img.freepik.com/free-psd/top-view-delicious-pizza_23-2151868956.jpg?t=st=1742108540~exp=1742112140~hmac=6b1d718cf9aa131c5d7532ff14ae50539db74da00f51398ad2304f9c43d3bd22&w=740",
-        type: "non-veg",
-      },
-    ],
-  },
-  {
-    category: "Combos",
-    items: [
-      {
-        id: "5",
-        name: "Veg Thali",
-        price: 199,
-        description: "Complete vegetarian meal plate.",
-        image:
-          "https://img.freepik.com/free-psd/top-view-delicious-pizza_23-2151868956.jpg?t=st=1742108540~exp=1742112140~hmac=6b1d718cf9aa131c5d7532ff14ae50539db74da00f51398ad2304f9c43d3bd22&w=740",
-        type: "veg",
-      },
-    ],
-  },
-  {
-    category: "Beverages",
-    items: [
-      {
-        id: "6",
-        name: "Mango Lassi",
-        price: 79,
-        description: "Sweet mango yogurt drink.",
-        image:
-          "https://img.freepik.com/free-psd/top-view-delicious-pizza_23-2151868956.jpg?t=st=1742108540~exp=1742112140~hmac=6b1d718cf9aa131c5d7532ff14ae50539db74da00f51398ad2304f9c43d3bd22&w=740",
-        type: "veg",
-      },
-    ],
-  },
-];
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
 const MenuScreen = () => {
+  const [menuData, setMenuData] = useState([]);
   const [activeSections, setActiveSections] = useState({});
+  const [cartItems, setCartItems] = useState([]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const res = await axios.get("http://192.168.29.186:2000/api/menu/getMenu");
+        setMenuData(res.data);
+      } catch (err) {
+        console.error("Error fetching menu:", err);
+      }
+    };
+    fetchMenu();
+  }, []);
 
   const toggleSection = (category) => {
     setActiveSections((prev) => ({
@@ -96,33 +36,43 @@ const MenuScreen = () => {
     }));
   };
 
-  const renderItem = (item) => (
-    <View style={styles.itemContainer} key={item.id}>
-      <Image source={{ uri: item.image }} style={styles.itemImage} />
+  const addToCart = (item) => {
+    setCartItems((prev) => [...prev, item]);
+  };
+
+  const getTotalPrice = () => {
+    return cartItems.reduce((total, item) => total + item.itemCost, 0);
+  };
+
+  const renderItem = (item, key) => (
+    <View style={styles.itemContainer} key={key}>
+      <Image
+        source={{ uri: `http://192.168.29.186:2000/uploads/${item.image}` }}
+        style={styles.itemImage}
+      />
       <View style={styles.itemInfo}>
         <View style={styles.itemHeader}>
           <View
             style={[
               styles.foodTypeIndicator,
-              {
-                borderColor: item.type === "veg" ? "green" : "red",
-              },
+              { borderColor: item.type === "veg" ? "green" : "red" },
             ]}
           >
             <View
               style={[
                 styles.foodTypeDot,
-                {
-                  backgroundColor: item.type === "veg" ? "green" : "red",
-                },
+                { backgroundColor: item.type === "veg" ? "green" : "red" },
               ]}
             />
           </View>
-          <Text style={styles.itemName}>{item.name}</Text>
+          <Text style={styles.itemName}>{item.itemName}</Text>
         </View>
-        <Text style={styles.itemPrice}>₹{item.price}</Text>
-        <Text style={styles.itemDesc}>{item.description}</Text>
-        <TouchableOpacity style={styles.addButton}>
+        <Text style={styles.itemPrice}>₹{item.itemCost}</Text>
+        <Text style={styles.itemDesc}>{item.description || ""}</Text>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => addToCart(item)}
+        >
           <Text style={styles.addButtonText}>ADD</Text>
         </TouchableOpacity>
       </View>
@@ -130,25 +80,42 @@ const MenuScreen = () => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      {menuData.map((section) => (
-        <View key={section.category} style={styles.accordionSection}>
-          <TouchableOpacity
-            style={styles.accordionHeader}
-            onPress={() => toggleSection(section.category)}
-          >
-            <Text style={styles.accordionTitle}>{section.category}</Text>
-            <Text style={styles.accordionToggle}>
-              {activeSections[section.category] ? "▲" : "▼"}
-            </Text>
-          </TouchableOpacity>
+    <View style={{ flex: 1 }}>
+      <ScrollView style={styles.container}>
+        {menuData.map((section, sectionIndex) => (
+          <View key={sectionIndex} style={styles.accordionSection}>
+            <TouchableOpacity
+              style={styles.accordionHeader}
+              onPress={() => toggleSection(section.name)}
+            >
+              <Text style={styles.accordionTitle}>{section.name}</Text>
+              <Text style={styles.accordionToggle}>
+                {activeSections[section.name] ? "▲" : "▼"}
+              </Text>
+            </TouchableOpacity>
 
-          <Collapsible collapsed={!activeSections[section.category]}>
-            {section.items.map(renderItem)}
-          </Collapsible>
-        </View>
-      ))}
-    </ScrollView>
+            <Collapsible collapsed={!activeSections[section.name]}>
+              {section.items.map((item, itemIndex) =>
+                renderItem(item, `${sectionIndex}-${itemIndex}`)
+              )}
+            </Collapsible>
+          </View>
+        ))}
+      </ScrollView>
+
+      {cartItems.length > 0 && (
+        <TouchableOpacity
+          style={styles.cartBar}
+          onPress={() => navigation.navigate("Cart")}
+        >
+          <Text style={styles.cartText}>
+            {cartItems.length} {cartItems.length === 1 ? "item" : "items"} | ₹
+            {getTotalPrice()}
+          </Text>
+          <Text style={styles.viewCartText}>View Cart</Text>
+        </TouchableOpacity>
+      )}
+    </View>
   );
 };
 
@@ -178,8 +145,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 12,
     paddingBottom: 12,
-    backgroundColor: "#e2e1cf",
-    alignItems: "center", 
+    backgroundColor: "#FFEAC5",
+    alignItems: "center",
     padding: 10,
     borderRadius: 5,
   },
@@ -218,12 +185,13 @@ const styles = StyleSheet.create({
   },
   itemPrice: {
     fontSize: 14,
-    color: "#444",
+    fontWeight: "bold",
+    color: "black",
     marginVertical: 2,
   },
   itemDesc: {
     fontSize: 12,
-    color: "#777",
+    color: "black",
   },
   addButton: {
     marginTop: 8,
@@ -237,6 +205,35 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: "#00b386",
     fontWeight: "600",
+  },
+  cartBar: {
+    position: "absolute",
+    bottom: 20,
+    left: "5%",
+    width: "90%",
+    height: 60,
+    backgroundColor: "#ffba00",
+    marginBottom: 60,
+    borderRadius: 50,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  cartText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#000",
+  },
+  viewCartText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#000",
   },
 });
 

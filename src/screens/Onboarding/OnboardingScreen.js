@@ -34,15 +34,12 @@ const OnboardingScreen = ({ navigation }) => {
     {
       id: 3,
       title: "Fast Delivery",
-      description:
-        "Get your food delivered hot and fresh, right to your doorstep.",
+      description: "Get your food delivered hot and fresh, right to your doorstep.",
       image: require("../../assets/splash.png"),
     },
   ];
 
-  const handleGetStarted = () => {
-    setModalVisible(true);
-  };
+  const handleGetStarted = () => setModalVisible(true);
 
   const handleSendOtp = () => {
     if (phoneNumber.trim().length !== 10) {
@@ -50,8 +47,11 @@ const OnboardingScreen = ({ navigation }) => {
       return;
     }
 
-    alert(`OTP sent to ${phoneNumber}`);
     navigation.replace("OTP Verification", { phoneNumber });
+  };
+
+  const handleCreateAccount = () => {
+    navigation.replace('RegistrationScreen');
   };
 
   return (
@@ -66,14 +66,9 @@ const OnboardingScreen = ({ navigation }) => {
       >
         {slides.map((slide, index) => (
           <View key={slide.id} style={styles.slide}>
-            <ImageBackground
-              source={slide.image}
-              style={styles.backgroundImage}
-            >
+            <ImageBackground source={slide.image} style={styles.backgroundImage}>
               <LinearGradient
                 colors={["rgba(226, 225, 207, 0.3)", "rgba(191, 187, 149, 0.5)"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
                 style={styles.overlay}
               />
               <View style={styles.textContainer}>
@@ -81,24 +76,20 @@ const OnboardingScreen = ({ navigation }) => {
                 <Text style={styles.description}>{slide.description}</Text>
               </View>
               {index === slides.length - 1 && (
-                <View style={{ flex: 1, marginTop: 50, marginBottom: 20 }}>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleGetStarted}
-                  >
-                    <Text style={styles.buttonText}>Get Started</Text>
-                  </TouchableOpacity>
-                </View>
+                <TouchableOpacity style={styles.button} onPress={handleGetStarted}>
+                  <Text style={styles.buttonText}>Get Started</Text>
+                </TouchableOpacity>
               )}
             </ImageBackground>
           </View>
         ))}
       </Swiper>
 
-      {/* Bottom Sheet Modal */}
+      {/* Modal */}
       <Modal
         isVisible={isModalVisible}
         onBackdropPress={() => setModalVisible(false)}
+        onBackButtonPress={() => setModalVisible(false)}
         style={styles.modal}
       >
         <View style={styles.modalContent}>
@@ -115,6 +106,13 @@ const OnboardingScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.loginButton} onPress={handleSendOtp}>
             <Text style={styles.loginButtonText}>Continue</Text>
           </TouchableOpacity>
+
+          <View style={styles.registerContainer}>
+            <Text style={styles.registerText}>Don't have an account? </Text>
+            <TouchableOpacity onPress={handleCreateAccount}>
+              <Text style={styles.registerLink}>Register</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     </View>
@@ -141,19 +139,17 @@ const styles = StyleSheet.create({
     fontSize: 50,
     fontWeight: "900",
     color: "#fff",
-    textAlign: "left",
     marginBottom: 5,
   },
   description: {
     fontSize: 20,
     fontWeight: "500",
     color: "#fff",
-    textAlign: "left",
     lineHeight: 30,
     marginBottom: 30,
   },
   button: {
-    backgroundColor: "#758058",
+    backgroundColor: "#ffba00",
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
@@ -163,11 +159,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 40,
   },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
+  buttonText: { color: "white", fontSize: 18, fontWeight: "bold" },
   dotStyle: {
     backgroundColor: "#ccc",
     width: 8,
@@ -176,53 +168,43 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
   },
   activeDotStyle: {
-    backgroundColor: "#758058",
+    backgroundColor: "#ffba00",
     width: 10,
     height: 10,
     borderRadius: 5,
     marginHorizontal: 3,
   },
-  // Modal styles
-  modal: {
-    justifyContent: "flex-end",
-    margin: 0,
-  },
+  modal: { justifyContent: "flex-end", margin: 0 },
   modalContent: {
     backgroundColor: "#fff",
     padding: 25,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
-  welcomeText: {
-    fontSize: 22,
-    fontWeight: "700",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  loginPrompt: {
-    textAlign: "center",
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 20,
-  },
+  welcomeText: { fontSize: 22, fontWeight: "700", textAlign: "center" },
+  loginPrompt: { textAlign: "center", fontSize: 16, color: "#666", marginBottom: 20 },
   input: {
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
     marginBottom: 16,
-    backgroundColor: "#e2e1cf",
+    backgroundColor: "#FFEAC5",
+    color: "black",
   },
   loginButton: {
-    backgroundColor: "#758058",
+    backgroundColor: "#ffba00",
     padding: 14,
     borderRadius: 8,
     alignItems: "center",
   },
-  loginButtonText: {
-    color: "#3B271C",
-    fontSize: 16,
-    fontWeight: "700",
+  loginButtonText: { color: "#3B271C", fontSize: 16, fontWeight: "700" },
+  registerContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 16,
   },
+  registerText: { fontSize: 14, color: "#555" },
+  registerLink: { fontSize: 14, color: "#ffba00", fontWeight: "bold" },
 });
 
 export default OnboardingScreen;

@@ -56,14 +56,14 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: 'bold', color: '#000', marginBottom: 10 },
   subtitle: { fontSize: 14, textAlign: 'center', color: '#666', marginBottom: 30 },
   primaryButton: {
-    backgroundColor: '#fc8019',
+    backgroundColor: '#ffba00',
     paddingVertical: 14,
     paddingHorizontal: 30,
     borderRadius: 8,
     marginBottom: 12,
   },
   primaryButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-  secondaryText: { color: '#fc8019', fontWeight: 'bold' },
+  secondaryText: { color: '#ffba00', fontWeight: 'bold' },
 });
 
 export default LocationPermissionScreen;

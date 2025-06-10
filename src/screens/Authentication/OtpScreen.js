@@ -5,14 +5,12 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
-import { useDispatch, useSelector } from "react-redux";
-
 
 const OtpScreen = ({ route, navigation }) => {
   const { confirmation, phoneNumber } = route.params;
@@ -21,31 +19,24 @@ const OtpScreen = ({ route, navigation }) => {
   const [timer, setTimer] = useState(30);
   const inputRefs = useRef([]);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
-  const dispatch = useDispatch();
-const { isUserExists, loading, error } = useSelector((state) => state.auth);
 
-
-const handleVerifyOtp = async () => {
-  const enteredOtp = otp.join(""); 
-  try {
-    await confirmation.confirm(enteredOtp);
-    console.log("User signed in successfully!");
-    navigation.replace("AppTabs"); // or Home
-  } catch (error) {
-    console.error(error);
+  const handleVerifyOtp = () => {
+  const enteredOtp = otp.join("");
+  if (enteredOtp !== "123456") {
     alert("Invalid OTP. Please try again.");
+    return;
+  }
+
+  // Simulate checking if user exists
+  const userExists = Math.random() < 0.5; // 50% chance for testing
+
+  if (userExists) {
+    navigation.replace("AppTabs");
+  } else {
+    setShowBottomSheet(true);
   }
 };
 
-
-// Monitor changes
-useEffect(() => {
-  if (isUserExists === true) {
-    navigation.replace("AppTabs");
-  } else if (isUserExists === false) {
-    setShowBottomSheet(true);
-  }
-}, [isUserExists]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,7 +47,6 @@ useEffect(() => {
 
   const handleInputChange = (value, index) => {
     const newOtp = [...otp];
-
     if (value.length <= 1) {
       newOtp[index] = value;
 
@@ -67,26 +57,10 @@ useEffect(() => {
       if (!value && index > 0) {
         inputRefs.current[index - 1]?.focus();
       }
+
+      setOtp(newOtp);
     }
-
-    setOtp(newOtp);
   };
-
-  // const handleVerifyOtp = () => {
-  //   const enteredOtp = otp.join("");
-  //   if (enteredOtp !== "123456") {
-  //     Alert.alert("Error", "Invalid OTP. Please try again.");
-  //     return;
-  //   }
-
-  //   const isUserExists = Math.random() < 0.5;
-
-  //   if (isUserExists) {
-  //     navigation.replace("AppTabs");
-  //   } else {
-  //     setShowBottomSheet(true);
-  //   }
-  // };
 
   const handleCreateAccount = () => {
     setShowBottomSheet(false);
@@ -98,12 +72,8 @@ useEffect(() => {
       style={styles.container}
       behavior={Platform.select({ ios: "padding", android: null })}
     >
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Ionicons name="arrow-back" size={24} color="#000" />
-      </TouchableOpacity>
+      
+
       <Text style={styles.heading}>Verify with OTP sent to</Text>
       <Text style={styles.phone}>{phoneNumber}</Text>
 
@@ -205,12 +175,10 @@ const styles = StyleSheet.create({
     width: 50,
     height: 55,
     borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: "#ccc",
+    backgroundColor: "#FFEAC5",
     textAlign: "center",
     fontSize: 20,
     fontWeight: "bold",
-    backgroundColor: "#f9f9f9",
   },
   otpFilled: {
     borderColor: "green",
@@ -223,7 +191,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   continueBtn: {
-    backgroundColor: "#fc8019",
+    backgroundColor: "#ffba00",
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",
@@ -241,10 +209,9 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   resendLink: {
-    color: "#fc8019",
+    color: "#ffba00",
     fontWeight: "bold",
   },
-  // Bottom Sheet Styles
   modal: {
     justifyContent: "flex-end",
     margin: 0,

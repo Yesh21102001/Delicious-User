@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 16, fontWeight: "600", marginBottom: 8 },
   subText: { color: "#666", fontSize: 14 },
   addressInput: {
-    backgroundColor: "#e2e1cf",
+    backgroundColor: "#FFEAC5",
     borderRadius: 6,
     padding: 12,
     fontSize: 14,
@@ -309,11 +309,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   note: { fontSize: 14 },
-  link: { fontSize: 14, color: "#758058", fontWeight: "600" },
+  link: { fontSize: 14, color: "#ffba00", fontWeight: "600" },
   suggestionItem: {
     width: 120,
     paddingTop: 20,
-    backgroundColor: "#e2e1cf",
+    backgroundColor: "#ffba00",
     marginRight: 12,
     alignItems: "center",
     borderRadius: 10,
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
   },
   totalAmount: { fontSize: 18, fontWeight: "600" },
   payButton: {
-    backgroundColor: "#758058",
+    backgroundColor: "#ffba00",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 6,
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
   couponCode: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#758058",
+    color: "#ffba00",
   },
   couponDesc: {
     fontSize: 14,
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
   },
   modalClose: {
     textAlign: "center",
-    color: "#758058",
+    color: "#ffba00",
     fontSize: 16,
     fontWeight: "600",
     marginTop: 20,

@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   topBanner: {
-    backgroundColor: "#758058",
+    backgroundColor: "#0c3b2e",
     height: 150,
     width: "100%",
     padding: 20,
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   infoCard: {
-    backgroundColor: "#e2e1cf",
+    backgroundColor: "#FFEAC5",
     width: "90%",
     borderRadius: 10,
     padding: 16,
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: "#888",
+    color: "#ffba00",
     marginTop: 12,
   },
   value: {
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     color: "#222",
   },
   button: {
-    backgroundColor: "#758058",
+    backgroundColor: "#ffba00",
     paddingVertical: 14,
     borderRadius: 10,
     marginTop: 40,

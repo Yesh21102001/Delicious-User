@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   profileHeader: {
-    backgroundColor: "#e2e1cf", // Background color for profile header
+    backgroundColor: "#FFEAC5", 
     paddingVertical: 40,
     borderRadius: 12,
     alignItems: "center",
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 16,
-    backgroundColor: "#e2e1cf",
+    backgroundColor: "#FFEAC5",
     borderRadius: 8,
     marginVertical: 5,
     paddingHorizontal: 20,

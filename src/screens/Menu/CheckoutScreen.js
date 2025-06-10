@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: '#eee',
     borderWidth: 1,
-    backgroundColor: '#e2e1cf',
+    backgroundColor: '#FFEAC5',
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 1 },
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: '#555',
+    color: '#ffba00',
   },
   totalLabel: {
     fontSize: 16,
@@ -101,12 +101,12 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#eee',
+    backgroundColor: 'black',
     marginVertical: 10,
   },
   payButton: {
     marginTop: 30,
-    backgroundColor: '#758058',
+    backgroundColor: '#ffba00',
     paddingVertical: 16,
     borderRadius: 10,
     alignItems: 'center',
