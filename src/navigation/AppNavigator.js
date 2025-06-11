@@ -54,7 +54,7 @@ const AppNavigator = () => {
             tabBarLabel: "Home",
             title: "Bhimavaram Delicious Biryanis", // Custom header title
             headerTitleStyle: {
-              color: "#603F26", // ✅ Set header text color
+              color: "#ffba00", // ✅ Set header text color
               fontWeight: "bold", // Optional: make it bold
               fontSize: 22, // Optional: adjust font size
             },

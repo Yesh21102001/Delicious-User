@@ -1,32 +1,62 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 
-const offers = [
-  { id: '1', code: 'NEW50', desc: '50% off for new users' },
-  { id: '2', code: 'SAVE30', desc: 'Flat ₹30 off on orders above ₹199' },
-];
+const OffersScreen = () => {
+  const [offers, setOffers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-const OffersScreen = () => (
-  <View style={styles.container}>
-    <Text style={styles.header}>Available Offers</Text>
-    <FlatList
-      data={offers}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <View style={styles.card}>
-          <Text style={styles.code}>{item.code}</Text>
-          <Text>{item.desc}</Text>
-        </View>
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const response = await fetch("http://192.168.29.186:2000/api/coupon/");
+        const data = await response.json();
+        setOffers(data);
+      } catch (error) {
+        console.error("Failed to fetch coupons:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCoupons();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>Available Offers</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#6d9773" />
+      ) : (
+        <FlatList
+          data={offers}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Text style={styles.code}>{item.code}</Text>
+              <Text style={styles.description}>{item.description}</Text>
+              <Text style={styles.detail}>Min Order: ₹{item.minOrderAmount}</Text>
+              <Text style={styles.detail}>Discount: ₹{item.discountAmount}</Text>
+              <Text style={styles.detail}>Expires: {new Date(item.expiryDate).toLocaleDateString()}</Text>
+            </View>
+          )}
+        />
       )}
-    />
-  </View>
-);
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
   header: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
-  card: { padding: 16, borderRadius: 8, backgroundColor: '#6d9773', marginBottom: 10 },
-  code: { fontWeight: 'bold', fontSize: 16, color: "#ffba00" },
+  card: {
+    padding: 16,
+    borderRadius: 8,
+    backgroundColor: '#FFEAC5',
+    marginBottom: 10,
+  },
+  code: { fontWeight: 'bold', fontSize: 18, color: "#6d9773", marginBottom: 4 },
+  detail: { fontSize: 14, color: "black" },
+  description: {fontWeight: "bold"},
 });
 
 export default OffersScreen;

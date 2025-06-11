@@ -7,6 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from "react-native";
 import Swiper from "react-native-swiper";
 import { LinearGradient } from "expo-linear-gradient";
@@ -34,24 +35,43 @@ const OnboardingScreen = ({ navigation }) => {
     {
       id: 3,
       title: "Fast Delivery",
-      description: "Get your food delivered hot and fresh, right to your doorstep.",
+      description:
+        "Get your food delivered hot and fresh, right to your doorstep.",
       image: require("../../assets/splash.png"),
     },
   ];
 
   const handleGetStarted = () => setModalVisible(true);
 
-  const handleSendOtp = () => {
-    if (phoneNumber.trim().length !== 10) {
-      alert("Please enter a valid 10-digit phone number.");
+  const handleSendOTP = async () => {
+    if (!phoneNumber || phoneNumber.length !== 10) {
+      Alert.alert("Invalid", "Please enter a valid 10-digit phone number");
       return;
     }
 
-    navigation.replace("OTP Verification", { phoneNumber });
+    try {
+      const response = await fetch("http://192.168.29.186:2000/api/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phoneNumber }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert("Success", "OTP sent successfully");
+        navigation.replace("OTP Verification", { phoneNumber });
+      } else {
+        Alert.alert("Error", data.message || "Failed to send OTP");
+      }
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      Alert.alert("Error", "Failed to send OTP. Please try again.");
+    }
   };
 
   const handleCreateAccount = () => {
-    navigation.replace('RegistrationScreen');
+    navigation.replace("RegistrationScreen");
   };
 
   return (
@@ -66,7 +86,10 @@ const OnboardingScreen = ({ navigation }) => {
       >
         {slides.map((slide, index) => (
           <View key={slide.id} style={styles.slide}>
-            <ImageBackground source={slide.image} style={styles.backgroundImage}>
+            <ImageBackground
+              source={slide.image}
+              style={styles.backgroundImage}
+            >
               <LinearGradient
                 colors={["rgba(226, 225, 207, 0.3)", "rgba(191, 187, 149, 0.5)"]}
                 style={styles.overlay}
@@ -76,7 +99,10 @@ const OnboardingScreen = ({ navigation }) => {
                 <Text style={styles.description}>{slide.description}</Text>
               </View>
               {index === slides.length - 1 && (
-                <TouchableOpacity style={styles.button} onPress={handleGetStarted}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={handleGetStarted}
+                >
                   <Text style={styles.buttonText}>Get Started</Text>
                 </TouchableOpacity>
               )}
@@ -85,7 +111,6 @@ const OnboardingScreen = ({ navigation }) => {
         ))}
       </Swiper>
 
-      {/* Modal */}
       <Modal
         isVisible={isModalVisible}
         onBackdropPress={() => setModalVisible(false)}
@@ -103,7 +128,7 @@ const OnboardingScreen = ({ navigation }) => {
             onChangeText={setPhoneNumber}
             maxLength={10}
           />
-          <TouchableOpacity style={styles.loginButton} onPress={handleSendOtp}>
+          <TouchableOpacity style={styles.loginButton} onPress={handleSendOTP}>
             <Text style={styles.loginButtonText}>Continue</Text>
           </TouchableOpacity>
 
@@ -182,7 +207,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
   },
   welcomeText: { fontSize: 22, fontWeight: "700", textAlign: "center" },
-  loginPrompt: { textAlign: "center", fontSize: 16, color: "#666", marginBottom: 20 },
+  loginPrompt: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 20,
+  },
   input: {
     borderRadius: 8,
     padding: 12,

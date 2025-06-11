@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import {
-  View, Text, TextInput, StyleSheet,
-  TouchableOpacity, Dimensions, ScrollView,
-  Alert, ActivityIndicator
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  ScrollView,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
@@ -11,36 +17,59 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const BASE_URL = "http://192.168.29.186:2000/api/location";
 
-const ManualLocationScreen = ({ navigation }) => {
-  const [marker, setMarker] = useState({ latitude: 37.78825, longitude: -122.4324 });
-  const [address1, setAddress1] = useState("");
+const ManualLocationScreen = ({ navigation, route }) => {
+  const { userId, userLocation, coords } = route.params || {};
+  const [marker, setMarker] = useState(
+    coords || { latitude: 37.78825, longitude: -122.4324 }
+  );
+  const [address1, setAddress1] = useState(userLocation || "");
   const [address2, setAddress2] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [loading, setLoading] = useState(true);
+  const [noLocationFound, setNoLocationFound] = useState(false);
 
   useEffect(() => {
     const fetchLocation = async () => {
       try {
-        const userId = await AsyncStorage.getItem("userId");
-        if (!userId) return setLoading(false);
+        const storedUserId = userId || (await AsyncStorage.getItem("userId"));
+        const token = await AsyncStorage.getItem("token");
 
-        const res = await axios.get(`${BASE_URL}/${userId}`);
+        if (!storedUserId || !token) {
+          Alert.alert("Error", "User ID or token not found. Please register again.");
+          navigation.navigate("RegistrationScreen");
+          return;
+        }
+
+        const res = await axios.get(`${BASE_URL}/${storedUserId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         const data = res.data;
 
-        setAddress1(data.address1 || "");
+        setAddress1(data.address1 || userLocation || "");
         setAddress2(data.address2 || "");
         setCity(data.city || "");
         setPostalCode(data.postalCode || "");
-        setMarker({ latitude: data.latitude, longitude: data.longitude });
+        setMarker(
+          data.latitude && data.longitude
+            ? { latitude: data.latitude, longitude: data.longitude }
+            : coords || { latitude: 37.78825, longitude: -122.4324 }
+        );
       } catch (err) {
-        console.log("Fetch location failed:", err.message);
+        if (err.response && err.response.status === 404) {
+          setNoLocationFound(true);
+        } else {
+          console.error("Fetch location failed:", err.message);
+        }
       } finally {
         setLoading(false);
       }
     };
     fetchLocation();
-  }, []);
+  }, [userId, userLocation, coords]);
 
   const handleSubmit = async () => {
     if (!address1 || !city || !postalCode) {
@@ -54,26 +83,41 @@ const ManualLocationScreen = ({ navigation }) => {
         const { latitude, longitude } = geoResults[0];
         setMarker({ latitude, longitude });
 
-        const userId = await AsyncStorage.getItem("userId");
-        if (!userId) return Alert.alert("Error", "UserId not found");
+        const storedUserId = userId || (await AsyncStorage.getItem("userId"));
+        const token = await AsyncStorage.getItem("token");
 
-        await axios.post(`${BASE_URL}/save`, {
-          userId,
-          address1,
-          address2,
-          city,
-          postalCode,
-          latitude,
-          longitude,
-        });
+        if (!storedUserId || !token) {
+          Alert.alert("Error", "User ID or token not found. Please register again.");
+          navigation.navigate("RegistrationScreen");
+          return;
+        }
+
+        await axios.post(
+          `${BASE_URL}/save`,
+          {
+            userId: storedUserId,
+            address1,
+            address2,
+            city,
+            postalCode,
+            latitude,
+            longitude,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         Alert.alert("Success", "Location saved successfully.");
+        navigation.navigate("NotificationScreen", { userId: storedUserId });
       } else {
         Alert.alert("Not Found", "Unable to find that address on the map.");
       }
     } catch (err) {
-      console.error("Error:", err.message);
-      Alert.alert("Error", "Something went wrong.");
+      console.error("Error saving location:", err.message);
+      Alert.alert("Error", "Something went wrong while saving location.");
     }
   };
 
@@ -100,6 +144,11 @@ const ManualLocationScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {noLocationFound && (
+        <Text style={styles.noLocationText}>
+          No saved location found. Please enter your location.
+        </Text>
+      )}
       <MapView
         style={styles.map}
         region={{
@@ -152,7 +201,15 @@ const ManualLocationScreen = ({ navigation }) => {
 
         <TouchableOpacity
           style={[styles.primaryButton, styles.continueButton]}
-          onPress={() => navigation.navigate("NotificationScreen")}
+          onPress={async () => {
+            const storedUserId = userId || (await AsyncStorage.getItem("userId"));
+            if (!storedUserId) {
+              Alert.alert("Error", "User ID not found. Please register again.");
+              navigation.navigate("RegistrationScreen");
+              return;
+            }
+            navigation.navigate("NotificationScreen", { userId: storedUserId });
+          }}
         >
           <Text style={styles.primaryButtonText}>Continue</Text>
         </TouchableOpacity>
@@ -189,6 +246,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
+  },
+  noLocationText: {
+    fontSize: 16,
+    color: "#ffba00",
+    textAlign: "center",
+    marginBottom: 10,
   },
 });
 

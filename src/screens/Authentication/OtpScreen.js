@@ -20,22 +20,48 @@ const OtpScreen = ({ route, navigation }) => {
   const inputRefs = useRef([]);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
 
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp = async () => {
   const enteredOtp = otp.join("");
-  if (enteredOtp !== "123456") {
-    alert("Invalid OTP. Please try again.");
+
+  if (enteredOtp.length !== 6) {
+    alert("Please enter the full 6-digit OTP.");
     return;
   }
 
-  // Simulate checking if user exists
-  const userExists = Math.random() < 0.5; // 50% chance for testing
+  try {
+    const response = await fetch("http://192.168.29.186:2000/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        phone: phoneNumber,
+        otp: enteredOtp,
+      }),
+    });
 
-  if (userExists) {
-    navigation.replace("AppTabs");
-  } else {
-    setShowBottomSheet(true);
+    const data = await response.json();
+
+    if (!response.ok) {
+      // OTP invalid or user not found
+      if (data.message === "User not found, please register first") {
+        setShowBottomSheet(true); // show create account modal
+      } else {
+        Alert.alert("OTP Error", data.message || "Verification failed");
+      }
+    } else {
+      // Login successful
+      navigation.replace("AppTabs", {
+        userId: data.userId,
+        token: data.token,
+      });
+    }
+  } catch (err) {
+    console.error("Login Error:", err);
+    Alert.alert("Network Error", "Please try again later.");
   }
 };
+
 
 
   useEffect(() => {

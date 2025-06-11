@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,18 +11,34 @@ import {
   StatusBar,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
 
 const HomeScreen = ({ navigation }) => {
   const [isVeg, setIsVeg] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const categories = [
-    { name: "Biryani" },
-    { name: "Starter" },
-    { name: "Noodles" },
-    { name: "Tandoori" },
-  ];
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get(
+        "http://192.168.29.186:2000/api/menu/getMenu"
+      );
+      const enabledCategories = res.data.filter(
+        (cat) => cat.isEnabled !== false
+      );
+      setCategories(enabledCategories);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const items = [
     { name: "Margherita Pizza", price: 12, type: "Veg" },
@@ -99,7 +115,7 @@ const HomeScreen = ({ navigation }) => {
                     style={styles.addButton}
                     onPress={() => handleAddItem(item)}
                   >
-                    <Ionicons name="add-circle" size={30} color="#6d9773" />
+                    <Ionicons name="add-circle" size={30} color="#ffba00" />
                   </TouchableOpacity>
                 </View>
               ))}
@@ -171,6 +187,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
     padding: 10,
     borderRadius: 12,
+    width: 120,
   },
   categoryImage: {
     width: 80,
@@ -178,10 +195,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   categoryText: {
-    fontSize: 14,
-    marginTop: 5,
-    fontWeight: "600",
-  },
+  fontSize: 14,
+  marginTop: 5,
+  fontWeight: "600",
+  textAlign: "center",        // ✅ center text inside its container
+},
+
   itemsContainer: {
     flexDirection: "column",
   },

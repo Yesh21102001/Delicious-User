@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,22 +6,61 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 const ProfileScreen = ({ navigation }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const phone = await AsyncStorage.getItem("phone");
+        console.log("");
+        if (!phone) {
+          Alert.alert("Error", "Phone number not found in storage.");
+          return;
+        }
+
+        const res = await axios.get(`http://192.168.29.186:2000/api/me`);
+        setUser(res.data);
+      } catch (err) {
+        console.error("Fetch Error:", err.message);
+        Alert.alert("Error", "Failed to fetch user details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   const handleLogout = () => {
+    AsyncStorage.clear(); // clear all data
     Alert.alert("Logout", "You have been logged out!");
     navigation.replace("Onboard");
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="black" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Profile Section */}
       <View style={styles.profileHeader}>
         <Ionicons name="person-circle-outline" size={100} color="black" />
-        <Text style={styles.name}>Hello, User!</Text>
-        <Text style={styles.email}>user@example.com</Text>
+        <Text style={styles.name}>Hello, {user?.name || "User"}!</Text>
+        <Text style={styles.email}>{user?.email || "user@example.com"}</Text>
+        <Text style={styles.userId}>User ID: {user?.userId || "N/A"}</Text>
       </View>
 
       {/* Menu Options */}
@@ -29,12 +68,7 @@ const ProfileScreen = ({ navigation }) => {
         style={styles.menuItem}
         onPress={() => navigation.navigate("OrderHistory")}
       >
-        <Ionicons
-          name="receipt-outline"
-          size={24}
-          color="black"
-          style={styles.icon}
-        />
+        <Ionicons name="receipt-outline" size={24} color="black" style={styles.icon} />
         <Text style={styles.menuText}>My Orders</Text>
       </TouchableOpacity>
 
@@ -42,25 +76,15 @@ const ProfileScreen = ({ navigation }) => {
         style={styles.menuItem}
         onPress={() => navigation.navigate("Offers")}
       >
-        <Ionicons
-          name="pricetags-outline"
-          size={24}
-          color="black"
-          style={styles.icon}
-        />
+        <Ionicons name="pricetags-outline" size={24} color="black" style={styles.icon} />
         <Text style={styles.menuText}>Offers</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.menuItem}
-        onPress={() => navigation.navigate("ManualLocationScreen")}
+        onPress={() => navigation.navigate("SavedAddresses")}
       >
-        <Ionicons
-          name="location-outline"
-          size={24}
-          color="black"
-          style={styles.icon}
-        />
+        <Ionicons name="location-outline" size={24} color="black" style={styles.icon} />
         <Text style={styles.menuText}>Saved Addresses</Text>
       </TouchableOpacity>
 
@@ -68,41 +92,23 @@ const ProfileScreen = ({ navigation }) => {
         style={styles.menuItem}
         onPress={() => navigation.navigate("Settings")}
       >
-        <Ionicons
-          name="settings-outline"
-          size={24}
-          color="black"
-          style={styles.icon}
-        />
+        <Ionicons name="settings-outline" size={24} color="black" style={styles.icon} />
         <Text style={styles.menuText}>Settings</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.menuItem}
-        onPress={() =>
-          Alert.alert("Help Center", "Email us at help@example.com")
-        }
+        onPress={() => Alert.alert("Help Center", "Email us at help@example.com")}
       >
-        <Ionicons
-          name="help-circle-outline"
-          size={24}
-          color="black"
-          style={styles.icon}
-        />
+        <Ionicons name="help-circle-outline" size={24} color="black" style={styles.icon} />
         <Text style={styles.menuText}>Help Center</Text>
       </TouchableOpacity>
 
-      {/* Logout Button */}
       <TouchableOpacity
         style={[styles.menuItem, styles.logoutItem]}
         onPress={handleLogout}
       >
-        <Ionicons
-          name="log-out-outline"
-          size={24}
-          color="white"
-          style={styles.icon}
-        />
+        <Ionicons name="log-out-outline" size={24} color="white" style={styles.icon} />
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -115,8 +121,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#f4f4f9",
     flexGrow: 1,
   },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   profileHeader: {
-    backgroundColor: "#FFEAC5", 
+    backgroundColor: "#FFEAC5",
     paddingVertical: 40,
     borderRadius: 12,
     alignItems: "center",
@@ -137,6 +148,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "black",
     marginTop: 6,
+  },
+  userId: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 4,
   },
   menuItem: {
     flexDirection: "row",
@@ -161,11 +177,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   logoutItem: {
-    backgroundColor: "#ff4f5a", 
+    backgroundColor: "#ff4f5a",
   },
   logoutText: {
     fontSize: 18,
-    color: "white", 
+    color: "white",
     fontWeight: "500",
   },
 });

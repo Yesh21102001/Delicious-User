@@ -1,33 +1,128 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+} from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
-const addresses = [
-  { id: '1', label: 'Home', location: '38 Forest Manor Rd, Toronto' },
-  { id: '2', label: 'Work', location: '12 King St W, Toronto' },
-];
+const BASE_URL = 'http://192.168.29.186:2000/api/location';
 
-const SavedAddressesScreen = () => (
-  <View style={styles.container}>
-    <Text style={styles.header}>Saved Addresses</Text>
-    <FlatList
-      data={addresses}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <View style={styles.card}>
-          <Text style={styles.label}>{item.label}</Text>
-          <Text style={styles.location}>{item.location}</Text>
-        </View>
-      )}
-    />
-  </View>
-);
+const SavedAddressScreen = () => {
+  const [locationData, setLocationData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('userId');
+        const token = await AsyncStorage.getItem('token');
+
+        if (!userId || !token) {
+          Alert.alert('Session Expired', 'Please log in again.');
+          navigation.replace('OtpScreen');
+          return;
+        }
+
+        const response = await axios.get(`${BASE_URL}/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setLocationData(response.data.location);
+      } catch (error) {
+        console.error('Fetch error:', error.message);
+        Alert.alert('Error', 'Failed to fetch address');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAddress();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#ffba00" />
+      </View>
+    );
+  }
+
+  if (!locationData) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.noData}>No address found.</Text>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.header}>Saved Address</Text>
+      <View style={styles.card}>
+        <Text style={styles.label}>User ID:</Text>
+        <Text style={styles.value}>{locationData.userId}</Text>
+
+        <Text style={styles.label}>Address Line 1:</Text>
+        <Text style={styles.value}>{locationData.address1}</Text>
+
+        <Text style={styles.label}>Address Line 2:</Text>
+        <Text style={styles.value}>{locationData.address2}</Text>
+
+        <Text style={styles.label}>City:</Text>
+        <Text style={styles.value}>{locationData.city}</Text>
+
+        <Text style={styles.label}>Postal Code:</Text>
+        <Text style={styles.value}>{locationData.postalCode}</Text>
+      </View>
+    </ScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20 },
-  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
-  card: { marginBottom: 16, borderBottomWidth: 1, borderColor: '#eee', paddingBottom: 10 },
-  label: { fontSize: 16, fontWeight: '600' },
-  location: { fontSize: 14, color: '#666' },
+  container: {
+    padding: 16,
+    backgroundColor: '#fff',
+    flexGrow: 1,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  card: {
+    backgroundColor: '#fff4db',
+    padding: 16,
+    borderRadius: 10,
+    elevation: 3,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 10,
+  },
+  value: {
+    fontSize: 16,
+    color: '#444',
+    marginTop: 4,
+  },
+  noData: {
+    fontSize: 18,
+    color: '#999',
+  },
 });
 
-export default SavedAddressesScreen;
+export default SavedAddressScreen;

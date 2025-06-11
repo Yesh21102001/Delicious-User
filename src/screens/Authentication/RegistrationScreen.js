@@ -10,8 +10,9 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = "http://192.168.29.186:2000/api"; // Make sure this IP is correct and reachable
+const BASE_URL = "http://192.168.29.186:2000/api";
 
 const RegistrationScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -80,8 +81,11 @@ const RegistrationScreen = ({ navigation }) => {
       const data = await response.json();
 
       if (response.ok) {
+        // Store userId in AsyncStorage
+        await AsyncStorage.setItem("userId", data.userId.toString());
         Alert.alert("Success", "Registration successful!");
-        navigation.replace("LocationPermissionScreen");
+        // Pass userId to LocationPermissionScreen
+        navigation.replace("LocationPermissionScreen", { userId: data.userId });
       } else {
         Alert.alert("Error", data.message || "Registration failed.");
       }
