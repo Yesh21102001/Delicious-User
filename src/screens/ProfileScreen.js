@@ -20,7 +20,8 @@ const ProfileScreen = ({ navigation }) => {
     const fetchUser = async () => {
       try {
         const phone = await AsyncStorage.getItem("phone");
-        console.log("");
+        const userData = await AsyncStorage.getItem("userData");
+        console.log("userData", userData);
         if (!phone) {
           Alert.alert("Error", "Phone number not found in storage.");
           return;
@@ -68,7 +69,12 @@ const ProfileScreen = ({ navigation }) => {
         style={styles.menuItem}
         onPress={() => navigation.navigate("OrderHistory")}
       >
-        <Ionicons name="receipt-outline" size={24} color="black" style={styles.icon} />
+        <Ionicons
+          name="receipt-outline"
+          size={24}
+          color="black"
+          style={styles.icon}
+        />
         <Text style={styles.menuText}>My Orders</Text>
       </TouchableOpacity>
 
@@ -76,7 +82,12 @@ const ProfileScreen = ({ navigation }) => {
         style={styles.menuItem}
         onPress={() => navigation.navigate("Offers")}
       >
-        <Ionicons name="pricetags-outline" size={24} color="black" style={styles.icon} />
+        <Ionicons
+          name="pricetags-outline"
+          size={24}
+          color="black"
+          style={styles.icon}
+        />
         <Text style={styles.menuText}>Offers</Text>
       </TouchableOpacity>
 
@@ -84,7 +95,12 @@ const ProfileScreen = ({ navigation }) => {
         style={styles.menuItem}
         onPress={() => navigation.navigate("SavedAddresses")}
       >
-        <Ionicons name="location-outline" size={24} color="black" style={styles.icon} />
+        <Ionicons
+          name="location-outline"
+          size={24}
+          color="black"
+          style={styles.icon}
+        />
         <Text style={styles.menuText}>Saved Addresses</Text>
       </TouchableOpacity>
 
@@ -92,15 +108,27 @@ const ProfileScreen = ({ navigation }) => {
         style={styles.menuItem}
         onPress={() => navigation.navigate("Settings")}
       >
-        <Ionicons name="settings-outline" size={24} color="black" style={styles.icon} />
+        <Ionicons
+          name="settings-outline"
+          size={24}
+          color="black"
+          style={styles.icon}
+        />
         <Text style={styles.menuText}>Settings</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.menuItem}
-        onPress={() => Alert.alert("Help Center", "Email us at help@example.com")}
+        onPress={() =>
+          Alert.alert("Help Center", "Email us at help@example.com")
+        }
       >
-        <Ionicons name="help-circle-outline" size={24} color="black" style={styles.icon} />
+        <Ionicons
+          name="help-circle-outline"
+          size={24}
+          color="black"
+          style={styles.icon}
+        />
         <Text style={styles.menuText}>Help Center</Text>
       </TouchableOpacity>
 
@@ -108,7 +136,12 @@ const ProfileScreen = ({ navigation }) => {
         style={[styles.menuItem, styles.logoutItem]}
         onPress={handleLogout}
       >
-        <Ionicons name="log-out-outline" size={24} color="white" style={styles.icon} />
+        <Ionicons
+          name="log-out-outline"
+          size={24}
+          color="white"
+          style={styles.icon}
+        />
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
     </ScrollView>

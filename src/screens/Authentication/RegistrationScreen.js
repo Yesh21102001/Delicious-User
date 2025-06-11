@@ -82,7 +82,11 @@ const RegistrationScreen = ({ navigation }) => {
 
       if (response.ok) {
         // Store userId in AsyncStorage
-        await AsyncStorage.setItem("userId", data.userId.toString());
+        console.log("data", data);
+        await AsyncStorage.setItem(
+          "userData",
+          JSON.stringify({ userId: data.userId, token: data.token })
+        );
         Alert.alert("Success", "Registration successful!");
         // Pass userId to LocationPermissionScreen
         navigation.replace("LocationPermissionScreen", { userId: data.userId });
